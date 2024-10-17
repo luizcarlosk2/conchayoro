@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: step do job1
-        rub: echo Hello, world! Job1.
+        run: echo Hello, world! Job1.
 
   job2:
     runs-on: ubuntu-latest
