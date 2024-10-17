@@ -1,9 +1,9 @@
-name: pipeline-deploy-s3
+name: pipeline-deploy-s3 - need approval
 
 on:
-  #push:
-  #  branches: [ main ]
-  workflow_dispatch
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,7 +18,6 @@ jobs:
         name: site
         path: index.html
 
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -29,6 +28,22 @@ jobs:
       AWS_EC2_METADATA_DISABLED: true
       BUCKET_S3: ${{ vars.BUCKET_S3 }}
     steps:
+    - name: Wait for manual approval
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { context, github } = require('@actions/github');
+          const issue = context.issue;
+          const comment = await github.issues.createComment({
+            ...issue,
+            body: "Please approve the deployment by commenting `approve`."
+          });
+
+          const approval = await github.actions.awaitApproval({ timeout: 3600 });
+          if (!approval) {
+            throw new Error('Deployment approval timed out.');
+          }
+
     - uses: actions/download-artifact@v4
       with:
         name: site
