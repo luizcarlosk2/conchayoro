@@ -28,6 +28,12 @@ jobs:
       AWS_EC2_METADATA_DISABLED: true
       BUCKET_S3: ${{ vars.BUCKET_S3 }}
     steps:
+    - name: Approval step
+      uses: actions/wait@v2
+      with:
+        timeout_minutes: 30
+        approval: true  # Requires manual approval before proceeding
+        
     - uses: actions/download-artifact@v4
       with:
         name: site
